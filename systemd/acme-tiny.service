@@ -1,0 +1,15 @@
+[Unit]
+Description=Renew ACME certificates
+
+[Service]
+Type=oneshot
+Nice=19
+ProtectHome=true
+ProtectSystem=true
+User=acme-tiny
+Group=acme-tiny
+SyslogIdentifier=acme-tiny
+ExecStart=/opt/acme-tiny/renew_cert.sh
+
+[Install]
+Also=acme-tiny.timer
