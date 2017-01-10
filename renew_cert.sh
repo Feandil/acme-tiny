@@ -4,7 +4,7 @@
 
 ACMETINY_DIR="$(dirname -- "$0")"
 CERT_DIR="$ACMETINY_DIR/certs"
-ACME_DIR=/var/www/acme-challenges/
+ACME_DIR="$ACMETINY_DIR/acme-challenges/"
 
 # Give at least 7 days between each renewal
 RENEW_DAYS=7

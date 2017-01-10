@@ -24,9 +24,9 @@ Configure a directory were ACME challenge files will be created:
 
 .. code-block:: sh
 
-    mkdir -p /var/www/acme-challenges/
-    chown www-data:acme-tiny /var/www/acme-challenges/
-    chmod 770 /var/www/acme-challenges/
+    mkdir -p /opt/acme-tiny/acme-challenges/
+    chown www-data:acme-tiny /opt/acme-tiny/acme-challenges/
+    chmod 770 /opt/acme-tiny/acme-challenges/
 
 Configure the web server to serve this directory for the domains handled by the server. For example on NGINX:
 
@@ -37,7 +37,7 @@ Configure the web server to serve this directory for the domains handled by the 
         server_name example.org www.example.org;
 
         location /.well-known/acme-challenge/ {
-            alias /var/www/acme-challenges/;
+            alias /opt/acme-tiny/acme-challenges/;
             try_files $uri =404;
         }
         location / {
@@ -105,7 +105,7 @@ Add a new domain certificate:
 
 
     # Run acme-tiny.py
-    sudo -u acme-tiny python /opt/acme-tiny/acme-tiny/acme_tiny.py --account-key /opt/acme-tiny/account.key --csr /opt/acme-tiny/certs/$DOMAIN.csr --acme-dir /var/www/acme-challenges/ > /opt/acme-tiny/certs/$DOMAIN.crt
+    sudo -u acme-tiny python /opt/acme-tiny/acme-tiny/acme_tiny.py --account-key /opt/acme-tiny/account.key --csr /opt/acme-tiny/certs/$DOMAIN.csr --acme-dir /opt/acme-tiny/acme-challenges/ > /opt/acme-tiny/certs/$DOMAIN.crt
     cat certs/$DOMAIN.crt certs/intermediate.pem > certs/$DOMAIN.chained.pem
 
 Renew all the certificates in ``/opt/acme-tiny/certs``:
