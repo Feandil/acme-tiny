@@ -49,31 +49,38 @@ For Apache:
 
 .. code-block:: apache
 
-    Alias /.well-known/acme-challenge/ "/var/www/challenges/"
+    <VirtualHost *:80>
+        ServerName www.example.org;
+        ServerAlias example.org;
 
-    # Add a <Location> block when the access to / is filtered
-    <Location "/.well-known/acme-challenge/">
-        Options -Indexes
-        AllowOverride None
-        <IfVersion >= 2.4>
-            Require all granted
-        </IfVersion>
-        <IfVersion < 2.4>
-            Order allow,deny
-            Allow from all
-        </IfVersion>
-    </Location>
-    <Directory "/var/www/challenges">
-        Options -Indexes
-        AllowOverride None
-        <IfVersion >= 2.4>
-            Require all granted
-        </IfVersion>
-        <IfVersion < 2.4>
-            Order allow,deny
-            Allow from all
-        </IfVersion>
-    </Directory>
+        Alias /.well-known/acme-challenge/ "/var/www/challenges/"
+        <Directory "/var/www/challenges">
+            Options -Indexes
+            AllowOverride None
+            <IfVersion >= 2.4>
+                Require all granted
+            </IfVersion>
+            <IfVersion < 2.4>
+                Order allow,deny
+                Allow from all
+            </IfVersion>
+        </Directory>
+
+        RedirectMatch permanent ^/((?!.well-known/acme-challenge/).*)$ https://www.example.org/$1
+
+        # Add a <Location> block when the access to / is filtered
+        <Location "/.well-known/acme-challenge/">
+            Options -Indexes
+            AllowOverride None
+            <IfVersion >= 2.4>
+                Require all granted
+            </IfVersion>
+            <IfVersion < 2.4>
+                Order allow,deny
+                Allow from all
+            </IfVersion>
+        </Location>
+    </VirtualHost>
 
 On a systemd system, install the timer:
 
