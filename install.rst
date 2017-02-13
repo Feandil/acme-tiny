@@ -124,3 +124,37 @@ Renew all the certificates in ``/opt/acme-tiny/certs``:
 .. code-block:: sh
 
     sudo -u acme-tiny /opt/acme-tiny/renew_cert.sh
+
+In order to use the certicates, the server configuration need to be configured for example like this on NGINX:
+
+.. code-block:: nginx
+
+    server {
+        listen 443;
+        server_name example.org www.example.org;
+
+        ssl on;
+        ssl_certificate /opt/acme-tiny/certs/www.example.org.chained.pem;
+        ssl_certificate_key /etc/ssl/nginx/www.example.org.key;
+        ssl_dhparam /etc/ssl/dhparam.pem;
+        ssl_session_timeout 5m;
+        ssl_session_cache shared:SSL:10m;
+
+        # ...
+    }
+
+And for Apache:
+
+.. code-block:: apache
+
+    <VirtualHost 127.0.0.1:443>
+        ServerName www.example.org
+        ServerAlias example.org
+
+        SSLEngine on
+        SSLCertificateFile /opt/acme-tiny/certs/example.org.crt
+        SSLCertificateChainFile /opt/acme-tiny/certs/intermediate.pem
+        SSLCertificateKeyFile /etc/apache2/ssl/example.org.key
+
+        # ...
+    </VirtualHost>
