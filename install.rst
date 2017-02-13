@@ -106,20 +106,21 @@ Add a new domain certificate:
 .. code-block:: sh
 
     DOMAIN=my.domain.example.org
+    KEYPATH="/etc/ssl/nginx/$DOMAIN.key" # or "/etc/apache2/ssl/$DOMAIN.key"
     # Create an RSA key (as root) and its associated certificate signing request
-    (umask 77 && openssl genrsa 4096 > /etc/ssl/nginx/$DOMAIN.key)
-    openssl req -new -sha256 -key /etc/ssl/nginx/$DOMAIN.key -subj "/CN=$DOMAIN" > /opt/acme-tiny/certs/$DOMAIN.csr
+    (umask 77 && openssl genrsa 4096 > "$KEYPATH")
+    openssl req -new -sha256 -key "$KEYPATH" -subj "/CN=$DOMAIN" > "/opt/acme-tiny/certs/$DOMAIN.csr"
 
     # For multiple domains, like www.example.org and example.org
-    openssl req -new -sha256 -key /etc/ssl/nginx/$DOMAIN.key -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:example.org,DNS:www.example.org")) > /opt/acme-tiny/certs/$DOMAIN.csr
+    openssl req -new -sha256 -key "$KEYPATH" -subj "/" -reqexts SAN -config <(cat /etc/ssl/openssl.cnf <(printf "[SAN]\nsubjectAltName=DNS:example.org,DNS:www.example.org")) > "/opt/acme-tiny/certs/$DOMAIN.csr"
 
 
     # Run acme-tiny.py
-    sudo -u acme-tiny python /opt/acme-tiny/acme_tiny.py --account-key /opt/acme-tiny/account.key --csr /opt/acme-tiny/certs/$DOMAIN.csr --acme-dir /var/www/acme-challenges/ > /opt/acme-tiny/certs/$DOMAIN.crt
-    cat certs/$DOMAIN.crt certs/intermediate.pem > certs/$DOMAIN.chained.pem
+    sudo -u acme-tiny python /opt/acme-tiny/acme_tiny.py --account-key /opt/acme-tiny/account.key --csr "/opt/acme-tiny/certs/$DOMAIN.csr" --acme-dir /var/www/acme-challenges/ > "/opt/acme-tiny/certs/$DOMAIN.crt"
+    cat "certs/$DOMAIN.crt" certs/intermediate.pem > "certs/$DOMAIN.chained.pem"
 
 Renew all the certificates in ``/opt/acme-tiny/certs``:
 
 .. code-block:: sh
 
-    /opt/acme-tiny/renew_cert.sh
+    sudo -u acme-tiny /opt/acme-tiny/renew_cert.sh
