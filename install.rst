@@ -1,7 +1,7 @@
 Installation steps
 ==================
 
-Install this project in a new directory in ``/home`` and clone acme-tiny into it:
+Install this project in a new directory in ``/opt`` and clone acme-tiny into it:
 
 .. code-block:: sh
 
@@ -26,7 +26,7 @@ Configure a directory were ACME challenge files will be created:
 
     mkdir -p /var/www/acme-challenges/
     chown www-data:acme-tiny /var/www/acme-challenges/
-    chmod 770 /var/www/acme-challenges/
+    chmod 170 /var/www/acme-challenges/
 
 Configure the web server to serve this directory for the domains handled by the server. For example on NGINX:
 
@@ -53,10 +53,12 @@ For Apache:
         ServerName www.example.org;
         ServerAlias example.org;
 
-        Alias /.well-known/acme-challenge/ "/var/www/challenges/"
-        <Directory "/var/www/challenges">
+        Alias /.well-known/acme-challenge/ "/var/www/acme-challenges/"
+        <Directory "/var/www/acme-challenges">
             Options -Indexes
             AllowOverride None
+            # Disable PHP if it is used as an Apache module
+            php_flag engine off
             <IfVersion >= 2.4>
                 Require all granted
             </IfVersion>
@@ -72,6 +74,7 @@ For Apache:
         <Location "/.well-known/acme-challenge/">
             Options -Indexes
             AllowOverride None
+            php_flag engine off
             <IfVersion >= 2.4>
                 Require all granted
             </IfVersion>
