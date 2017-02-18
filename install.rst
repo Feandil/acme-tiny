@@ -117,7 +117,7 @@ Add a new domain certificate:
 
     # Run acme-tiny.py
     sudo -u acme-tiny python /opt/acme-tiny/acme_tiny.py --account-key /opt/acme-tiny/account.key --csr "/opt/acme-tiny/certs/$DOMAIN.csr" --acme-dir /var/www/acme-challenges/ > "/opt/acme-tiny/certs/$DOMAIN.crt"
-    cat "certs/$DOMAIN.crt" certs/intermediate.pem > "certs/$DOMAIN.chained.pem"
+    cat "certs/$DOMAIN.crt" certs/intermediate.pem | sudo -u acme-tiny tee "certs/$DOMAIN.chained.pem"
 
 Renew all the certificates in ``/opt/acme-tiny/certs``:
 
