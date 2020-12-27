@@ -10,7 +10,13 @@ Install this project in a new directory in ``/opt`` and clone acme-tiny into it:
     sudo -u acme-tiny git clone https://github.com/fishilico/acme-tiny
     mv acme-tiny/* acme-tiny/.[a-z]* .
     sudo -u acme-tiny mkdir certs
-    sudo -u acme-tiny wget -O certs/intermediate.pem https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem
+
+    # Current intermediate certificate (2020-12...)
+    sudo -u acme-tiny wget -O certs/lets-encrypt-r3-cross-signed.pem https://letsencrypt.org/certs/lets-encrypt-r3-cross-signed.pem
+    sudo -u acme-tiny cp certs/lets-encrypt-r3-cross-signed.pem certs/intermediate.pem
+
+    # Old intermediate certificate (until 2020-11)
+    sudo -u acme-tiny wget -O certs/lets-encrypt-x3-cross-signed.pem https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem
 
 Create an account key:
 
