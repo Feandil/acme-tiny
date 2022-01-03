@@ -16,10 +16,10 @@ then
 fi
 
 # Download intermediate cert
-INTCERT="$CERT_DIR/lets-encrypt-r3-cross-signed.pem"
+INTCERT="$CERT_DIR/lets-encrypt-r3.pem"
 if ! [ -e "$INTCERT" ]
 then
-    wget -O "$INTCERT" https://letsencrypt.org/certs/lets-encrypt-r3-cross-signed.pem || exit $?
+    wget -O "$INTCERT" https://letsencrypt.org/certs/lets-encrypt-r3.pem || exit $?
 fi
 if ! [ -r "$INTCERT" ]
 then
