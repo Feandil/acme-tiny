@@ -1,7 +1,7 @@
 # acme-tiny
 
-[![Build Status](https://travis-ci.org/diafygi/acme-tiny.svg)](https://travis-ci.org/diafygi/acme-tiny)
-[![Coverage Status](https://coveralls.io/repos/diafygi/acme-tiny/badge.svg?branch=master&service=github)](https://coveralls.io/github/diafygi/acme-tiny?branch=master)
+[![Tests](https://github.com/diafygi/acme-tiny/actions/workflows/full-tests-with-coverage.yml/badge.svg)](https://github.com/diafygi/acme-tiny/actions/workflows/full-tests-with-coverage.yml)
+[![Coverage Status](https://coveralls.io/repos/github/diafygi/acme-tiny/badge.svg?branch=master)](https://coveralls.io/github/diafygi/acme-tiny?branch=master)
 
 This is a tiny, auditable script that you can throw on your server to issue
 and renew [Let's Encrypt](https://letsencrypt.org/) certificates. Since it has
@@ -137,8 +137,8 @@ server {
     ssl_certificate /path/to/signed_chain.crt;
     ssl_certificate_key /path/to/domain.key;
     ssl_session_timeout 5m;
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA;
+    ssl_protocols TLSv1.2;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
     ssl_session_cache shared:SSL:50m;
     ssl_dhparam /path/to/server.dhparam;
     ssl_prefer_server_ciphers on;
@@ -179,13 +179,14 @@ service nginx reload
 0 0 1 * * /path/to/renew_cert.sh 2>> /var/log/acme_tiny.log
 ```
 
-NOTE: Since Let's Encrypt's ACME v2 release (acme-tiny 4.0.0+), the intermediate
+**NOTE:** Since Let's Encrypt's ACME v2 release (acme-tiny 4.0.0+), the intermediate
 certificate is included in the issued certificate download, so you no longer have
 to independently download the intermediate certificate and concatenate it to your
-signed certificate. If you have an bash script using acme-tiny &lt;4.0 (e.g. before
+signed certificate. If you have an shell script or Makefile using acme-tiny &lt;4.0 (e.g. before
 2018-03-17) with acme-tiny 4.0.0+, then you may be adding the intermediate
-certificate to your signed_chain.crt twice (not a big deal, it should still work fine,
-but just makes the certificate slightly larger than it needs to be). To fix,
+certificate to your signed_chain.crt twice (which
+[causes issues with at least GnuTLS 3.7.0](https://gitlab.com/gnutls/gnutls/-/issues/1131)
+besides making the certificate slightly larger than it needs to be). To fix,
 simply remove the bash code where you're downloading the intermediate and adding
 it to the acme-tiny certificate output.
 
@@ -204,6 +205,15 @@ reload your webserver without having permission to do anything else.
 * Backup your account private key (e.g. `account.key`)
 * Don't allow this script to be able to read your domain private key!
 * Don't allow this script to be run as root!
+
+## Staging Environment
+
+Let's Encrypt recommends testing new configurations against their staging servers,
+so when testing out your new setup, you can use
+`--directory-url https://acme-staging-v02.api.letsencrypt.org/directory`
+to issue fake test certificates instead of real ones from Let's Encrypt's production servers.
+See [https://letsencrypt.org/docs/staging-environment/](https://letsencrypt.org/docs/staging-environment/)
+for more details.
 
 ## Feedback/Contributing
 
