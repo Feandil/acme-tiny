@@ -1,15 +1,62 @@
 [Unit]
-Description=Renew ACME certificates
+Description=Renew certificate (acme-tiny)
+RefuseManualStart=no
+RefuseManualStop=yes
 
 [Service]
 Type=oneshot
-Nice=19
-ProtectHome=true
-ProtectSystem=true
+ExecStart=/opt/acme-tiny/renew_cert.sh
+NonBlocking=yes
+
+# See systemd.exec
+## PATHS
+ProtectProc=invisible
+ProcSubset=pid
+## USER/GROUP IDENTITY
 User=acme-tiny
 Group=acme-tiny
-SyslogIdentifier=acme-tiny
-ExecStart=/opt/acme-tiny/renew_cert.sh
+CapabilityBoundingSet=
+## SECURITY
+SecureBits=noroot-locked
+## MANDATORY ACCESS CONTROL
+SELinuxContext=system_u:system_r:acmetiny_t
+## PROCESS PROPERTIES
+UMask=0077
+KeyringMode=private
+## SCHEDULING
+Nice=19
+## SANDBOXING
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/acme-tiny/certs /opt/acme-tiny/acme-challenges
+InaccessiblePaths=/dev/shm
+NoExecPaths=/
+ExecPaths=/opt/acme-tiny/renew_cert.sh /usr/bin /usr/lib64 /usr/lib/gcc/x86_64-pc-linux-gnu/ /usr/lib/python3.14
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateNetwork=no
+PrivateIPC=yes
+ProtectHostname=yes
+ProtectClock=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictSUIDSGID=yes
+## SYSTEM CALL FILTERING
+SystemCallFilter=@system-service @mount
+SystemCallFilter=~memfd_create
+SystemCallFilter=~@clock @reboot
+SystemCallArchitectures=native
+# See systemd.resource-control
+## Network Accounting and Control
+SocketBindDeny=any
+## Device Access
+DevicePolicy=closed
 
 [Install]
 Also=acme-tiny.timer
