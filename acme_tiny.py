@@ -73,7 +73,7 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA, disable_check
     # parse account key to get public key
     log.info("Parsing account key...")
     out = _cmd(["openssl", "rsa", "-in", account_key, "-noout", "-text"], err_msg="OpenSSL Error")
-    pub_pattern = r"modulus:[\s]+?00:([a-f0-9\:\s]+?)\npublicExponent: ([0-9]+)"
+    pub_pattern = r"modulus:[\s]*(?:00:)?([a-f0-9\:\s]+?)\npublicExponent: ([0-9]+)"
     pub_hex, pub_exp = re.search(pub_pattern, out.decode('utf8'), re.MULTILINE|re.DOTALL).groups()
     pub_exp = "{0:x}".format(int(pub_exp))
     pub_exp = "0{0}".format(pub_exp) if len(pub_exp) % 2 else pub_exp
@@ -112,7 +112,7 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA, disable_check
     log.info("{0} Account ID: {1}".format("Registered!" if code == 201 else "Already registered!", acct_headers['Location']))
     if contact is not None:
         account, _, _ = _send_signed_request(acct_headers['Location'], {"contact": contact}, "Error updating contact details")
-        log.info("Updated contact details:\n{0}".format("\n".join(account['contact'])))
+        log.info("Updated contact details:\n{0}".format("\n".join(account.get('contact') or [])))
 
     # create a new order
     log.info("Creating new order...")
